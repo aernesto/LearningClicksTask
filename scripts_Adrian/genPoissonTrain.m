@@ -3,6 +3,7 @@ function t=genPoissonTrain(rate,timeLength)
 %using the Gillespie algorithm.
 %returns:
     %t is a column vector containing event times in second
+    %%return empty vector if no event occurred in time interval
 
 %pre-allocate ten times the mean array size 
 %for speed, will be shrinked after computation
