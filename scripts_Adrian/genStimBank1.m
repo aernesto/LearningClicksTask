@@ -12,7 +12,7 @@
 %           environment state.
 
 %parameters
-nTrials = 5;    % number of trials for each trial duration
+nTrials = 100000;    % number of trials for each trial duration
 h = 1;          % hazard rate in Hz for environmental changes
 rateHigh = 38;  % highest click rate in Hz
 rateLow = 2;    % lowest click rate in Hz
@@ -24,7 +24,7 @@ for idx = 1:totIdx
     data{idx, 2} = interrogationTimes(idx);
 end
 parpool(16)
-
+tic
 parfor idx = 1:totIdx
     T = interrogationTimes(idx);
     rng('shuffle')
@@ -42,3 +42,4 @@ end
 
 save('/scratch/adrian/ClickTrains_h1_rateHigh38_rateLow2_nTrials5.mat',...
 'data','-v7.3')
+toc
