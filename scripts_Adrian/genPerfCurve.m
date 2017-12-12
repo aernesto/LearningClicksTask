@@ -65,10 +65,11 @@ parfor tidx=1:N
     end
     perf_array(tidx,1) = correct / nTrials; % nTrials
 end
-plot(.2:.2:3,perf_array,'-o','linewidth',5)
-ylim([.5,1])
+plot(.2:.2:.4,perf_array(1:2),'-o','linewidth',1)
+%ylim([.5,1])
+xlim([0,.4])
 ylabel('performance', 'FontSize',20)
 xlabel('interrogation time', 'FontSize',20)
-title('Performance of ODE h=1, rateHigh=38, rateLow=2','FontSize',20)
+%title('Performance of ODE h=1, rateHigh=38, rateLow=2','FontSize',20)
 toc
         
