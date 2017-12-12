@@ -12,7 +12,7 @@
 %           environment state.
 
 %parameters
-nTrials = 100000;    % number of trials for each trial duration
+nTrials = 10000;    % number of trials for each trial duration
 h = 1;          % hazard rate in Hz for environmental changes
 rateHigh = 38;  % highest click rate in Hz
 rateLow = 2;    % lowest click rate in Hz
@@ -28,16 +28,16 @@ tic
 parfor idx = 1:totIdx
     T = interrogationTimes(idx);
     rng('shuffle')
-    trains=cell(nTrials,4);
+    global_trains=cell(nTrials,4);
     for jj = 1:nTrials
         [ct,E]=genClickEnvt(T, h);
-        trains{jj,3} = ct;
-        trains{jj,4} = E;
+        global_trains{jj,3} = ct;
+        global_trains{jj,4} = E;
         [lTrain, rTrain]=genClickObs(ct, E, rateLow, rateHigh, T);
-        trains{jj,1} = lTrain;
-        trains{jj,2} = rTrain;
+        global_trains{jj,1} = lTrain;
+        global_trains{jj,2} = rTrain;
     end
-    data{idx,1} = trains;
+    data{idx,1} = global_trains;
 end
 
 save('/scratch/adrian/ClickTrains_h1_rateHigh38_rateLow2_nTrials5.mat',...
