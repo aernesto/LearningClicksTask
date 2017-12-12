@@ -5,9 +5,9 @@ function t=genPoissonTrain(rate,timeLength)
     %t is a column vector containing event times in second
     %%return empty vector if no event occurred in time interval
 
-%pre-allocate ten times the mean array size 
+%pre-allocate 100 times the mean array size 
 %for speed, will be shrinked after computation
-t=zeros(ceil(10*rate*timeLength),1); % vector containing the event times
+t=zeros(ceil(100*rate*timeLength),1); % vector containing the event times
 
 totalTime=0;
 eventIndex=0;
@@ -17,9 +17,15 @@ while totalTime < timeLength
     eventIndex=eventIndex+1;
     t(eventIndex) = totalTime;
 end
-    
+%-----
+%NOTE: by now, t must have at least its first entry non zero
+%-----
+
 %trim unused nodes, and maybe last event if occurred beyond timeLength
 [lastEvent,idxLastEvent]=max(t);
+%-----
+%NOTE: idxLastEvent is at least 1
+%-----
 if lastEvent > timeLength
     idxLastEvent = idxLastEvent - 1;
 end
@@ -29,4 +35,5 @@ if idxLastEvent == 0
 else
     t=t(1:idxLastEvent);
 end
+t
 end
