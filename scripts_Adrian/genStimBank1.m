@@ -12,7 +12,7 @@
 %           environment state.
 
 %parameters
-nTrials = 1000;    % number of trials for each trial duration
+nTrials = 10000;    % number of trials for each trial duration
 h = 1;          % hazard rate in Hz for environmental changes
 rateHigh = 38;  % highest click rate in Hz
 rateLow = 2;    % lowest click rate in Hz
