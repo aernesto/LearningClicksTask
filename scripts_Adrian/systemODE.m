@@ -124,7 +124,7 @@ while time<T
     ym_new = ym_new + jump;
     
     % if report time hit, normalize and output posterior variance
-    if time > nxtposttime
+    if t_new > nxtposttime
         %normalization constant
         K = log(sum(exp(yp_new)+exp(ym_new)));
         %true posterior

@@ -23,9 +23,9 @@ trial = 1; % select first trial for now
 rateHigh=38;
 rateLow=2;
 % time step for forward Euler, in sec
-dt=1/10000;
+dt=1/30000;
 % max allowed change point count
-gamma_max=50;
+gamma_max=100;
 % hyperparameters for Gamma dist over hazard rate
 alpha=1;
 beta=1;
