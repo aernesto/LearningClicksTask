@@ -13,7 +13,15 @@ N=length(data);
 % total number of available trials for this trial duration
 nTrials = length(clicksCell);
 trial = 1; % select first trial for now
-[lTrain,rTrain]=clicksCell{trial, 1:2};
+[lTrain1,rTrain1]=clicksCell{1, 1:2};
+
+[lTrain2,rTrain2]=clicksCell{2, 1:2};
+[lTrain3,rTrain3]=clicksCell{3, 1:2};
+[lTrain4,rTrain4]=clicksCell{4, 1:2};
+[lTrain5,rTrain5]=clicksCell{5, 1:2};
+[lTrain6,rTrain6]=clicksCell{6, 1:2};
+lTrain=[lTrain1;3+lTrain2;6+lTrain3;9+lTrain4;12+lTrain5;15+lTrain6];
+rTrain=[rTrain1;3+rTrain2;6+rTrain3;9+rTrain4;12+rTrain5;15+rTrain6];
 
 %% set parameters
 % recall that h is normalized to 1 and T was set above (3 sec)
@@ -23,14 +31,15 @@ rateLow=2;
 % time step for forward Euler, in sec
 dt=1/10000;
 % max allowed change point count
-gamma_max=50;
+gamma_max=150;
 % hyperparameters for Gamma dist over hazard rate
 alpha=1;
 beta=1;
 priorState=[.5,.5];
 %% call ODE function
-posttimes=.5:.5:3;
-posttimes(end)=3-2*dt;
+posttimes=.5:.5:18;
+posttimes(end)=18-2*dt;
+T=18;
 tic
 vars=systemODE(lTrain, rTrain, rateLow, rateHigh, T, gamma_max,...
 posttimes, priorState, alpha, beta, dt);
