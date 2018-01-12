@@ -1,4 +1,4 @@
-function ss=systemODE(lTrain, rTrain, rateLow, rateHigh, T, gammax,...
+function [ss,tt]=systemODE(lTrain, rTrain, rateLow, rateHigh, T, gammax,...
 posttimes, priorState, alpha, beta, dt)
 % DESCRIPTION:
 % This function evolves the system of jump ODEs for the unknown hazard 
@@ -59,6 +59,7 @@ time=0;
 kappa = log(rateHigh/rateLow);
 
 post_var_h=zeros(size(posttimes));
+post_mean_h=post_var_h;
 nposttimes = length(posttimes);
 if nposttimes > 0
     idnxtposttime = 1;
@@ -133,6 +134,7 @@ while time<T
         %posterior variance over h
         v1=(gammaValues'+alpha)/(time+beta);
         v2=(gammaValues'+alpha+1)/(time+beta);
+        post_mean_h(idnxtposttime)=sum((exp(xp)+exp(xm)).*v1);
         post_var_h(idnxtposttime)=sum((exp(xp)+exp(xm)).*v1.*v2)-sum((exp(xp)+exp(xm)).*v1)^2;
         
         %update index of next reporting time
@@ -149,5 +151,6 @@ while time<T
     ym_old = ym_new;
     time = t_new;
 end
+tt=post_mean_h;
 ss=post_var_h;
 end
