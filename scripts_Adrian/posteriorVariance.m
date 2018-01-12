@@ -25,7 +25,7 @@ rateLow=2;
 % time step for forward Euler, in sec
 dt=1/10000;
 % max allowed change point count
-gamma_max=150;
+gamma_max=50;
 % hyperparameters for Gamma dist over hazard rate
 alpha=1;
 beta=1;
@@ -48,5 +48,5 @@ plot(posttimes,vars,'LineWidth',3);
 xlabel('time','FontSize',14)
 ylabel('posterior var','FontSize',14)
 xlim([0,50])
-ylim([0,max(vars)]);
+ylim([0,max(abs(vars))]);
 title('posterior var over h','FontSize',14)
