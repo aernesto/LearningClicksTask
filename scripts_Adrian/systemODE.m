@@ -1,5 +1,5 @@
 function ss=systemODE(lTrain, rTrain, rateLow, rateHigh, T, gammax,...
-posttimes, priorState, alpha, beta)
+posttimes, priorState, alpha, beta, dt)
 % DESCRIPTION:
 % This function evolves the system of jump ODEs for the unknown hazard 
 % rate, over a given stimulus train, and returns the values of the
@@ -19,6 +19,7 @@ posttimes, priorState, alpha, beta)
 %                   environmental states H+ and H- respectively
 %   alpha - hyperparameter of Gamma dist over h
 %   beta - hyperparameter of Gamma dist over h
+%   dt - timestep to use for Euler method
 %
 % RETURNS:
 %   ss - column vector with same dimensions as posttimes containing the 
@@ -107,17 +108,16 @@ while time<T
     yp_prime=-(alpha+gammaValues(2:end))';
     ym_prime=yp_prime;
     
-    yp_prime=yp_prime+(alpha-1+gammaValues(2:end)').*...
-        exp(ym_old(1:end-1)-yp_old(2:end))';
+    yp_prime=yp_prime+(alpha-1+gammaValues(2:end)').*exp(ym_old(1:end-1)-yp_old(2:end));
     yp_prime=yp_prime / (time + beta);
     
-    ym_prime=ym_prime+(alpha-1+gammaValues(2:end)').*...
-        exp(yp_old(1:end-1)-ym_old(2:end))';
+    ym_prime=ym_prime+(alpha-1+gammaValues(2:end)').*exp(yp_old(1:end-1)-ym_old(2:end));
     ym_prime=ym_prime / (time + beta);
     
         % concatenate
     yp_new = [yp_new_gamma0;dt*yp_prime + yp_old(2:end)];
     ym_new = [ym_new_gamma0;dt*ym_prime + ym_old(2:end)];
+    
     % add jump 
     yp_new = yp_new + jump;
     ym_new = ym_new + jump;
@@ -136,7 +136,7 @@ while time<T
         post_var_h(idnxtposttime)=sum((xp+xm).*v1.*v2)-sum((xp+xm).*v1)^2;
         
         %update index of next reporting time
-        if idnxtposttime == nposttime
+        if idnxtposttime == nposttimes
             nxtposttime = inf;
         else
             idnxtposttime = idnxtposttime + 1;

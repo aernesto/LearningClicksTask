@@ -4,6 +4,7 @@
 %   3. compute posterior variance over hazard rate at several time points
 
 %% load stimulus
+clear
 load('../data/ClickTrains_h1_rateHigh38_rateLow2_nTrials10000.mat')
 % number of distinct trial durations in the data array
 N=length(data);
@@ -26,5 +27,14 @@ gamma_max=50;
 % hyperparameters for Gamma dist over hazard rate
 alpha=1;
 beta=1;
-
+priorState=[.5,.5];
 %% call ODE function
+posttimes=.5:.5:3;
+tic
+vars=systemODE(lTrain, rTrain, rateLow, rateHigh, T, gamma_max,...
+posttimes, priorState, alpha, beta, dt);
+toc
+plot(posttimes,vars);
+xlabel('time')
+ylabel('posterior var')
+title('posterior variance over h single trial')
