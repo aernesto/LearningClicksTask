@@ -30,6 +30,7 @@ beta=1;
 priorState=[.5,.5];
 %% call ODE function
 posttimes=.5:.5:3;
+posttimes(end)=3-2*dt;
 tic
 vars=systemODE(lTrain, rTrain, rateLow, rateHigh, T, gamma_max,...
 posttimes, priorState, alpha, beta, dt);
@@ -37,4 +38,5 @@ toc
 plot(posttimes,vars);
 xlabel('time')
 ylabel('posterior var')
+ylim([0,max(vars)]);
 title('posterior variance over h single trial')

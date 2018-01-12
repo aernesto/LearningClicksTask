@@ -133,7 +133,7 @@ while time<T
         %posterior variance over h
         v1=(gammaValues'+alpha)/(time+beta);
         v2=(gammaValues'+alpha+1)/(time+beta);
-        post_var_h(idnxtposttime)=sum((xp+xm).*v1.*v2)-sum((xp+xm).*v1)^2;
+        post_var_h(idnxtposttime)=sum((exp(xp)+exp(xm)).*v1.*v2)-sum((exp(xp)+exp(xm)).*v1)^2;
         
         %update index of next reporting time
         if idnxtposttime == nposttimes
