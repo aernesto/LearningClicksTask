@@ -16,7 +16,6 @@ nTrials = length(clicksCell);
 trial = 1; % select first trial for now
 [lTrain,rTrain]=clicksCell{trial, 1:2};
 
-
 %% set parameters
 % recall that h is normalized to 1 and T was set above (3 sec)
 % click rates in Hz

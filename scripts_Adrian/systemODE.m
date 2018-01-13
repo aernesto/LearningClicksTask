@@ -33,6 +33,8 @@ rmax=length(rTrain);
 ltidx=0;
 rtidx=0;
 
+effinf=10000000000000; % effective infinity to avoid NaN values
+
 % set times of next left and right clicks (infinity if non-existent)
 if lmax > 0
     ltidx=1;
@@ -121,9 +123,17 @@ while time<T
     % isnan(yp_new) = 1 
     %%%
     %%%%%%%%%%%%%%%%
-    yp_new_gamma0=yp_old(1)+((alpha-1)*exp(-yp_old(1))-alpha)*dt/(time+beta);
-    ym_new_gamma0=ym_old(1)+((alpha-1)*exp(-ym_old(1))-alpha)*dt/(time+beta);
-    if and(t_new-inttime<dt, inttime == 26)
+    EYP = exp(-yp_old(1));
+    if EYP == inf
+        EYP = effinf;
+    end
+    EYM = exp(-ym_old(1));
+    if EYM == inf
+        EYM = effinf;
+    end
+    yp_new_gamma0=yp_old(1)+((alpha-1)*EYP-alpha)*dt/(time+beta);
+    ym_new_gamma0=ym_old(1)+((alpha-1)*EYM-alpha)*dt/(time+beta);
+    if or(abs(t_new-25.9747)<(dt/2),abs(t_new-25.9748)<(dt/2))
         fprintf(fileID,'yp_old(1) = %.3f \n', yp_old(1));
         fprintf(fileID,'isnan(yp_old(1)) = %d \n', isnan(yp_old(1)));
         fprintf(fileID,'alpha-1 = %.3f \n', alpha-1);
@@ -204,11 +214,11 @@ while time<T
     
     % reinitialize for next iteration
     yp_old = yp_new;
-    if abs(t_new - 25.975) <= 0.001
-        fprintf(fileID,'t_new = %.4f \n',t_new);
-        fprintf(fileID,'length(yp_new) = %d \n',length(yp_old));
-        fprintf(fileID,'isnan(yp_new) = %d \n',sum(isnan(yp_old)));
-    end
+    %if abs(t_new - 25.975) <= 0.001
+     %   fprintf(fileID,'t_new = %.4f \n',t_new);
+      %  fprintf(fileID,'length(yp_new) = %d \n',length(yp_old));
+       % fprintf(fileID,'isnan(yp_new) = %d \n',sum(isnan(yp_old)));
+    %end
     ym_old = ym_new;
     time = t_new;
 end
