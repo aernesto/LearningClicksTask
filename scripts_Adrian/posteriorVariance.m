@@ -36,11 +36,14 @@ posttimes(end)=50-2*dt;
 tic
 [vars, means]=systemODE(lTrain, rTrain, rateLow, rateHigh, T, gamma_max,...
 posttimes, priorState, alpha, beta, dt);
+vars(vars==inf)=vars(1);
+means(means==inf)=means(1);
 toc
 subplot(2,1,1)
 plot(posttimes,means,'LineWidth',3)
 ylabel('posterior mean','FontSize',14)
 xlim([0,50])
+ylim([0,2.2])
 title('posterior mean over h','FontSize',14)
 subplot(2,1,2)
 plot(posttimes,vars,'LineWidth',3);

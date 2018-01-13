@@ -133,20 +133,22 @@ while time<T
     end
     yp_new_gamma0=yp_old(1)+((alpha-1)*EYP-alpha)*dt/(time+beta);
     ym_new_gamma0=ym_old(1)+((alpha-1)*EYM-alpha)*dt/(time+beta);
-    if or(abs(t_new-25.9747)<(dt/2),abs(t_new-25.9748)<(dt/2))
-        fprintf(fileID,'yp_old(1) = %.3f \n', yp_old(1));
-        fprintf(fileID,'isnan(yp_old(1)) = %d \n', isnan(yp_old(1)));
-        fprintf(fileID,'alpha-1 = %.3f \n', alpha-1);
-        fprintf(fileID,'exp(-yp_old(1)) = %.3f \n', exp(-yp_old(1)));
-        fprintf(fileID,'dt/(time+beta) = %.3f \n', dt/(time+beta));
-        fprintf(fileID,'yp_new_gamma0 = %.3f \n',yp_new_gamma0);
-        fprintf(fileID,'ym_new_gamma0 = %.3f \n',ym_new_gamma0);
-    end
+%     if or(abs(t_new-25.9747)<(dt/2),abs(t_new-25.9748)<(dt/2))
+%         fprintf(fileID,'yp_old(1) = %.3f \n', yp_old(1));
+%         fprintf(fileID,'isnan(yp_old(1)) = %d \n', isnan(yp_old(1)));
+%         fprintf(fileID,'alpha-1 = %.3f \n', alpha-1);
+%         fprintf(fileID,'exp(-yp_old(1)) = %.3f \n', exp(-yp_old(1)));
+%         fprintf(fileID,'dt/(time+beta) = %.3f \n', dt/(time+beta));
+%         fprintf(fileID,'yp_new_gamma0 = %.3f \n',yp_new_gamma0);
+%         fprintf(fileID,'ym_new_gamma0 = %.3f \n',ym_new_gamma0);
+%     end
         % rest of vectors
     yp_prime=-(alpha+gammaValues(2:end))';
     ym_prime=yp_prime;
+    EP2=exp(ym_old(1:end-1)-yp_old(2:end));
+    EP2(EP2==inf)=effinf;
     
-    yp_prime=yp_prime+(alpha-1+gammaValues(2:end)').*exp(ym_old(1:end-1)-yp_old(2:end));
+    yp_prime=yp_prime+(alpha-1+gammaValues(2:end)').*EP2;
     if and(t_new-inttime<dt, inttime == 26)
             fmt = [repmat('%4d ', 1, size(yp_prime,2)-1), '%4d\n'];
             fprintf(fileID,'NaN yp_prime = \n');
@@ -154,8 +156,9 @@ while time<T
     end
     
     yp_prime=yp_prime / (time + beta);
-    
-    ym_prime=ym_prime+(alpha-1+gammaValues(2:end)').*exp(yp_old(1:end-1)-ym_old(2:end));
+    EM2=exp(yp_old(1:end-1)-ym_old(2:end));
+    EM2(EM2==inf)=effinf;
+    ym_prime=ym_prime+(alpha-1+gammaValues(2:end)').*EM2;
     ym_prime=ym_prime / (time + beta);
     
         % concatenate
@@ -178,8 +181,11 @@ while time<T
         v1=(gammaValues'+alpha)/(time+beta);
         v2=(gammaValues'+alpha+1)/(time+beta);
         post_mean_h(idnxtposttime)=sum((exp(xp)+exp(xm)).*v1);
-        post_var_h(idnxtposttime)=sum((exp(xp)+exp(xm)).*v1.*v2)-sum((exp(xp)+exp(xm)).*v1)^2;
-        
+        if sum((exp(xp)+exp(xm)).*v1)^2==inf
+            post_var_h(idnxtposttime)=sum((exp(xp)+exp(xm)).*v1.*v2)-effinf;
+        else
+            post_var_h(idnxtposttime)=sum((exp(xp)+exp(xm)).*v1.*v2)-sum((exp(xp)+exp(xm)).*v1)^2;
+        end
         if and(t_new-inttime<dt, inttime == 26)
             fmt = [repmat('%4d ', 1, size(yp_new,2)-1), '%4d\n'];
             fprintf(fileID,'NaN yp_new = \n');
@@ -214,11 +220,11 @@ while time<T
     
     % reinitialize for next iteration
     yp_old = yp_new;
-    %if abs(t_new - 25.975) <= 0.001
-     %   fprintf(fileID,'t_new = %.4f \n',t_new);
-      %  fprintf(fileID,'length(yp_new) = %d \n',length(yp_old));
-       % fprintf(fileID,'isnan(yp_new) = %d \n',sum(isnan(yp_old)));
-    %end
+    if inttime == 26
+        fprintf(fileID,'t_new = %.4f \n',t_new);
+        fprintf(fileID,'length(yp_new) = %d \n',length(yp_old));
+        fprintf(fileID,'isnan(yp_new) = %d \n',sum(isnan(yp_old)));
+    end
     ym_old = ym_new;
     time = t_new;
 end
