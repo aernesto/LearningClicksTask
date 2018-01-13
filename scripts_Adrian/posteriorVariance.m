@@ -23,7 +23,7 @@ trial = 1; % select first trial for now
 rateHigh=38;
 rateLow=2;
 % time step for forward Euler, in sec
-dt=1/30000;
+dt=1/10000;
 % max allowed change point count
 gamma_max=100;
 % hyperparameters for Gamma dist over hazard rate
@@ -33,7 +33,7 @@ priorState=[.5,.5];
 %% call ODE function
 posttimes=1:50;
 posttimes(end)=50-2*dt;
-%T
+% UP TO HEAR CODE IS FINE
 tic
 [vars, means]=systemODE(lTrain, rTrain, rateLow, rateHigh, T, gamma_max,...
 posttimes, priorState, alpha, beta, dt);

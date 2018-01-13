@@ -70,9 +70,14 @@ end
 
 %Forward Euler
 presclick=false; % if true, means at least one click fell in current time bin
+fileID=fopen('log1.txt','w');
 while time<T
     jump=0;
     t_new=time + dt;
+    inttime=floor(t_new);
+    if and(t_new-inttime<dt, inttime == 26)
+        fprintf(fileID,'t_new = %.3f \n',t_new);
+    end
     if t_new > lnxt
         presclick=true;
         jump = -kappa;
@@ -94,22 +99,50 @@ while time<T
         end
     end
     
-    %[t_new,ii] = min([lnxt, rnxt, stimulusLength]);
+    % following if statement is probably redundant
     if not(presclick)
         jump=0;
     end         
     presclick=false;
     
-    % evolve posterior vectors
+    % evolve log posterior vectors
         % scalar boundary case for gamma=0
+    %%%%%%%%%%%%%%%%
+    % BUG NEXT LINE
+    % returns NaN values
+    %
+    % following is an extract from log file:
+    %%%
+    % t_new = 25.9747 
+    % length(yp_new) = 100 
+    % isnan(yp_new) = 0 
+    % t_new = 25.9748 
+    % length(yp_new) = 100 
+    % isnan(yp_new) = 1 
+    %%%
+    %%%%%%%%%%%%%%%%
     yp_new_gamma0=yp_old(1)+((alpha-1)*exp(-yp_old(1))-alpha)*dt/(time+beta);
     ym_new_gamma0=ym_old(1)+((alpha-1)*exp(-ym_old(1))-alpha)*dt/(time+beta);
-    
+    if and(t_new-inttime<dt, inttime == 26)
+        fprintf(fileID,'yp_old(1) = %.3f \n', yp_old(1));
+        fprintf(fileID,'isnan(yp_old(1)) = %d \n', isnan(yp_old(1)));
+        fprintf(fileID,'alpha-1 = %.3f \n', alpha-1);
+        fprintf(fileID,'exp(-yp_old(1)) = %.3f \n', exp(-yp_old(1)));
+        fprintf(fileID,'dt/(time+beta) = %.3f \n', dt/(time+beta));
+        fprintf(fileID,'yp_new_gamma0 = %.3f \n',yp_new_gamma0);
+        fprintf(fileID,'ym_new_gamma0 = %.3f \n',ym_new_gamma0);
+    end
         % rest of vectors
     yp_prime=-(alpha+gammaValues(2:end))';
     ym_prime=yp_prime;
     
     yp_prime=yp_prime+(alpha-1+gammaValues(2:end)').*exp(ym_old(1:end-1)-yp_old(2:end));
+    if and(t_new-inttime<dt, inttime == 26)
+            fmt = [repmat('%4d ', 1, size(yp_prime,2)-1), '%4d\n'];
+            fprintf(fileID,'NaN yp_prime = \n');
+            %fprintf(fileID,fmt,isnan(yp_prime).');
+    end
+    
     yp_prime=yp_prime / (time + beta);
     
     ym_prime=ym_prime+(alpha-1+gammaValues(2:end)').*exp(yp_old(1:end-1)-ym_old(2:end));
@@ -137,6 +170,29 @@ while time<T
         post_mean_h(idnxtposttime)=sum((exp(xp)+exp(xm)).*v1);
         post_var_h(idnxtposttime)=sum((exp(xp)+exp(xm)).*v1.*v2)-sum((exp(xp)+exp(xm)).*v1)^2;
         
+        if and(t_new-inttime<dt, inttime == 26)
+            fmt = [repmat('%4d ', 1, size(yp_new,2)-1), '%4d\n'];
+            fprintf(fileID,'NaN yp_new = \n');
+            %fprintf(fileID,fmt, isnan(yp_new).');
+            
+            %disp(isnan(yp_new'));
+            fprintf(fileID,'NaN ym_new \n');
+            %disp(isnan(ym_new));
+            
+            fprintf(fileID,'nxtposttime = %.3f \n', nxtposttime);
+            fprintf(fileID,'K = %.3f \n',K);
+            
+            fprintf(fileID,'NaN v1 \n');
+            %disp(isnan(v1'));
+            fprintf(fileID,'NaN v2 \n');
+            %disp(isnan(v2));
+            fprintf(fileID,'NaN mean \n');
+            %disp(isnan(post_mean_h(idnxtposttime)));
+            fprintf(fileID,'NaN varexp \n');
+            %disp(isnan((exp(xp)+exp(xm)).*v1.*v2)');
+        end
+        
+        
         %update index of next reporting time
         if idnxtposttime == nposttimes
             nxtposttime = inf;
@@ -148,6 +204,11 @@ while time<T
     
     % reinitialize for next iteration
     yp_old = yp_new;
+    if abs(t_new - 25.975) <= 0.001
+        fprintf(fileID,'t_new = %.4f \n',t_new);
+        fprintf(fileID,'length(yp_new) = %d \n',length(yp_old));
+        fprintf(fileID,'isnan(yp_new) = %d \n',sum(isnan(yp_old)));
+    end
     ym_old = ym_new;
     time = t_new;
 end
