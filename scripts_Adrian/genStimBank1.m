@@ -12,18 +12,18 @@
 %           environment state.
 
 %parameters
-nTrials = 10000;    % number of trials for each trial duration
+nTrials = 100;    % number of trials for each trial duration
 h = 1;          % hazard rate in Hz for environmental changes
 rateHigh = 38;  % highest click rate in Hz
 rateLow = 2;    % lowest click rate in Hz
-interrogationTimes = 0.2:0.2:3; % vector of interrogation times
+interrogationTimes = 10:10:50; % vector of interrogation times
 totIdx = length(interrogationTimes);
 data = cell(totIdx,2);
 
 for idx = 1:totIdx
     data{idx, 2} = interrogationTimes(idx);
 end
-parpool(16)
+%parpool(16)
 tic
 parfor idx = 1:totIdx
     T = interrogationTimes(idx);
@@ -40,6 +40,6 @@ parfor idx = 1:totIdx
     data{idx,1} = global_trains;
 end
 
-save('/scratch/adrian/ClickTrains_h1_rateHigh38_rateLow2_nTrials5.mat',...
+save('/home/radillo/Git/GitHub/LearningClicksTask/data/ClickTrains_h1_rateHigh38_rateLow2_nTrials100_LONG.mat',...
 'data','-v7.3')
 toc
