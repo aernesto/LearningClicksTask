@@ -35,5 +35,5 @@ if idxLastEvent == 0
 else
     t=t(1:idxLastEvent);
 end
-t
+%t
 end
