@@ -70,11 +70,12 @@ end
 
 %Forward Euler
 presclick=false; % if true, means at least one click fell in current time bin
-fileID=fopen('log1.txt','w');
+fileID=fopen('sysODElog.txt','w');
 while time<T
     jump=0;
     t_new=time + dt;
     inttime=floor(t_new);
+    % print to log file
     if and(t_new-inttime<dt, inttime == 26)
         fprintf(fileID,'t_new = %.3f \n',t_new);
     end
@@ -212,6 +213,7 @@ while time<T
     ym_old = ym_new;
     time = t_new;
 end
+fclose(fileID);
 tt=post_mean_h;
 ss=post_var_h;
 end
