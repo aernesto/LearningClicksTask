@@ -1,14 +1,18 @@
 % This script does the following:
-%   1. load the stimulus for 1 trial of the dynamic clicks task
+%   1. generate the stimulus for 1 trial of the dynamic clicks task
 %   2. evolve the full system with truncated gamma (CP count)
 %   3. compute posterior variance over hazard rate at several time points
+%
+% REQUIRED SCRIPTS:
+% systemODE.m
+% genStimBank2.m
 
 clear
 %% set parameters
 % recall that h is normalized to 1 and T was set above (3 sec)
 % click rates in Hz
-rateHigh=38;
-rateLow=2;
+rateHigh=60;
+rateLow=0.3;
 % time step for forward Euler, in sec
 dt=1/100000;
 % max allowed change point count
@@ -19,10 +23,10 @@ beta=1;
 priorState=[.5,.5];
 
 %trial duration (sec)
-T=40;
+T=3;
 
 %% generate stimulus
-data=genStimBank2(1,1,38,2,T);
+data=genStimBank2(1,1,rateHigh,rateLow,T);
 % number of distinct trial durations in the data array
 N=size(data,1);
 % get single trial from longest trial duration (3 sec)
