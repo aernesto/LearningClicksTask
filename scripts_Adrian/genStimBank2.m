@@ -1,7 +1,9 @@
-%This script uses parallel processing to generate and store a bank
+function data=genStimBank2(nTrials,h,rateHigh,rateLow,...
+    interrogationTimes)
+%generates and returns a bank
 %of independent trials from the dynamic clicks task
-%returns: a file named ClickTrains2.mat containing a single cell array
-%           named data. This cell array has dimensions Nx2, where N is the
+%returns: a single cell array
+%           This cell array has dimensions Nx2, where N is the
 %           total number of trial durations for which trials should be
 %           generated. The first column contains a cell array of trials. 
 %           The second column contains the trial duration in seconds.
@@ -10,13 +12,12 @@
 %           the left and right click trains, respectively. Column 3
 %           contains the change point times and column 4 contains the
 %           environment state.
-
 %parameters
-nTrials = 1;    % number of trials for each trial duration
-h = 1;          % hazard rate in Hz for environmental changes
-rateHigh = 38;  % highest click rate in Hz
-rateLow = 2;    % lowest click rate in Hz
-interrogationTimes = 50; % vector of interrogation times
+%nTrials = 1;    % number of trials for each trial duration
+%h = 1;          % hazard rate in Hz for environmental changes
+%rateHigh = 38;  % highest click rate in Hz
+%rateLow = 2;    % lowest click rate in Hz
+%interrogationTimes = 50; % vector of interrogation times
 totIdx = length(interrogationTimes);
 data = cell(totIdx,2);
 
@@ -24,7 +25,7 @@ for idx = 1:totIdx
     data{idx, 2} = interrogationTimes(idx);
 end
 %parpool(16)
-tic
+
 for idx = 1:totIdx
     T = interrogationTimes(idx);
     rng('shuffle')
@@ -39,7 +40,4 @@ for idx = 1:totIdx
     end
     data{idx,1} = global_trains;
 end
-
-save('/scratch/adrian/ClickTrains_h1_rateHigh38_rateLow2_nTrials1_LONG.mat',...
-'data','-v7.3')
-toc
+end
