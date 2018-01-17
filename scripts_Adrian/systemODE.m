@@ -1,5 +1,5 @@
-function [ss,tt]=systemODE(lTrain, rTrain, rateLow, rateHigh, T, gammax,...
-posttimes, priorState, alpha, beta, dt)
+function [ss,tt,uu]=systemODE(lTrain, rTrain, rateLow, rateHigh, T, gammax,...
+posttimes, priorState, alpha, beta, dt, cptimes)
 % DESCRIPTION:
 % This function evolves the system of jump ODEs for the unknown hazard 
 % rate, over a given stimulus train, and returns the values of the
@@ -60,6 +60,7 @@ kappa = log(rateHigh/rateLow);
 
 post_var_h=zeros(size(posttimes));
 post_mean_h=post_var_h;
+lbvar=post_var_h;%vector storing theoretical lower bound on variance
 nposttimes = length(posttimes);
 if nposttimes > 0
     idnxtposttime = 1;
@@ -166,10 +167,16 @@ while time<T
         xm=ym_new-K;
     
         %posterior variance over h
-        v1=(gammaValues'+alpha)/(time+beta);
-        v2=(gammaValues'+alpha+1)/(time+beta);
+        v1=(gammaValues'+alpha)/(t_new+beta);
+        v2=(gammaValues'+alpha+1)/(t_new+beta);
         post_mean_h(idnxtposttime)=sum((exp(xp)+exp(xm)).*v1);
-        post_var_h(idnxtposttime)=sum((exp(xp)+exp(xm)).*v1.*v2)-sum((exp(xp)+exp(xm)).*v1)^2;
+        post_var_h(idnxtposttime)=sum((exp(xp)+exp(xm)).*v1.*v2)-...
+            sum((exp(xp)+exp(xm)).*v1)^2;
+        
+        %report lower bound on posterior variance
+        %(alpha+n)/(beta+t)^2
+        ncp = sum(cptimes<t_new); % number of true change points by report time
+        lbvar(idnxtposttime)=(alpha+ncp)/(beta+t_new)^2;
         
         if and(t_new-inttime<dt, inttime == 26)
             fmt = [repmat('%4d ', 1, size(yp_new,2)-1), '%4d\n'];
@@ -216,4 +223,5 @@ end
 fclose(fileID);
 tt=post_mean_h;
 ss=post_var_h;
+uu=lbvar;
 end
