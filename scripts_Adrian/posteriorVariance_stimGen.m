@@ -3,20 +3,7 @@
 %   2. evolve the full system with truncated gamma (CP count)
 %   3. compute posterior variance over hazard rate at several time points
 
-%% generate stimulus
 clear
-data=genStimBank2(1,1,38,2,50);
-% number of distinct trial durations in the data array
-N=size(data,1);
-% get single trial from longest trial duration (3 sec)
-[clicksCell, T]=data{N,:};
-%T
-% total number of available trials for this trial duration
-nTrials = length(clicksCell);
-trial = 1; % select first trial for now
-[lTrain,rTrain, cptimes]=clicksCell{trial, 1:3};
-
-
 %% set parameters
 % recall that h is normalized to 1 and T was set above (3 sec)
 % click rates in Hz
@@ -30,30 +17,52 @@ gamma_max=100;
 alpha=1;
 beta=1;
 priorState=[.5,.5];
+
+%trial duration (sec)
+T=40;
+
+%% generate stimulus
+data=genStimBank2(1,1,38,2,T);
+% number of distinct trial durations in the data array
+N=size(data,1);
+% get single trial from longest trial duration (3 sec)
+clicksCell=data{N,1};
+% total number of available trials for this trial duration
+nTrials = length(clicksCell);
+trial = 1; % select first trial for now
+[lTrain,rTrain, cptimes]=clicksCell{trial, 1:3};
+
+
+
 %% call ODE function
 %posttimes=1:50;
-posttimes=.1:.05:50;
+posttimes=.05:.05:T;
 %posttimes=[0.1:0.1:.9, posttimes];
-posttimes(end)=50-2*dt;
+posttimes(end)=T-2*dt;
 % UP TO HEAR CODE IS FINE
 tic
-[vars, means, lbvar]=systemODE(lTrain, rTrain, rateLow, rateHigh, T, gamma_max,...
-posttimes, priorState, alpha, beta, dt, cptimes);
+[vars, means, lbvar]=systemODE(lTrain, rTrain, rateLow, rateHigh, T, ...
+    gamma_max, posttimes, priorState, alpha, beta, dt, cptimes);
 toc
 % append prior values for time point t=0
 means=[alpha/beta,means];
 vars=[alpha/beta^2,vars];
 lbvar=[alpha/beta^2, lbvar];
 posttimes=[0,posttimes];
+%plot for posterior mean over h
 subplot(2,1,1)
-plot(posttimes,means,'LineWidth',3)
+plot(posttimes,means,'-b',[0,T],[1,1],'-r','LineWidth',3)
 ylabel('posterior mean','FontSize',14)
-xlim([0,50])
+xlim([0,T])
+ylim([0,max(means)+.5])
 title('posterior mean over h','FontSize',14)
+legend('learned','true')
+%plot for posterior variance over h
 subplot(2,1,2)
 plot(posttimes,vars,'-b',posttimes, lbvar,'-r','LineWidth',3);
 xlabel('time','FontSize',14)
 ylabel('posterior var','FontSize',14)
-xlim([0,50])
-ylim([0,max(abs(vars))]);
+legend('learned','theor. low bd')
+xlim([0,T])
+ylim([0,max(abs(vars))+.5]);
 title('posterior var over h','FontSize',14)
