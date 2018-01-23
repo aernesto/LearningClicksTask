@@ -79,9 +79,9 @@ while time<T
     t_new=time + dt;
     inttime=floor(t_new);
     % print to log file
-    if and(t_new-inttime<dt, inttime == 26)
-        fprintf(fileID,'t_new = %.3f \n',t_new);
-    end
+    %if and(abs(t_new-inttime)<2*dt, inttime == 27)
+     %   fprintf(fileID,'t_new = %.3f \n',t_new);
+    %end
     if t_new > lnxt
         presclick=true;
         jump = -kappa;
@@ -127,25 +127,25 @@ while time<T
     %%%%%%%%%%%%%%%%
     yp_new_gamma0=yp_old(1)-alpha*dt/(time+beta);
     ym_new_gamma0=ym_old(1)-alpha*dt/(time+beta);
-    if and(t_new-inttime<dt, inttime == 26)
-        fprintf(fileID,'yp_old(1) = %.3f \n', yp_old(1));
-        fprintf(fileID,'isnan(yp_old(1)) = %d \n', isnan(yp_old(1)));
-        fprintf(fileID,'alpha-1 = %.3f \n', alpha-1);
-        fprintf(fileID,'exp(-yp_old(1)) = %.3f \n', exp(-yp_old(1)));
-        fprintf(fileID,'dt/(time+beta) = %.3f \n', dt/(time+beta));
-        fprintf(fileID,'yp_new_gamma0 = %.3f \n',yp_new_gamma0);
-        fprintf(fileID,'ym_new_gamma0 = %.3f \n',ym_new_gamma0);
-    end
+    %if and(abs(t_new-inttime)<2*dt, inttime == 27)
+     %   fprintf(fileID,'yp_old(1) = %.5f \n', yp_old(1));
+      %  fprintf(fileID,'isnan(yp_old(1)) = %d \n', isnan(yp_old(1)));
+        %fprintf(fileID,'alpha-1 = %.3f \n', alpha-1);
+       % fprintf(fileID,'exp(-yp_old(1)) = %.3f \n', exp(-yp_old(1)));
+        %fprintf(fileID,'dt/(time+beta) = %.3f \n', dt/(time+beta));
+       % fprintf(fileID,'yp_new_gamma0 = %.3f \n',yp_new_gamma0);
+       % fprintf(fileID,'ym_new_gamma0 = %.3f \n',ym_new_gamma0);
+    %end
         % rest of vectors
     yp_prime=-(alpha+gammaValues(2:end))';
     ym_prime=yp_prime;
     
     yp_prime=yp_prime+(alpha-1+gammaValues(2:end)').*exp(ym_old(1:end-1)-yp_old(2:end));
-    if and(t_new-inttime<dt, inttime == 26)
-            fmt = [repmat('%4d ', 1, size(yp_prime,2)-1), '%4d\n'];
-            fprintf(fileID,'NaN yp_prime = \n');
+    %if and(abs(t_new-inttime)<2*dt, inttime == 27)
+      %      fmt = [repmat('%4d ', 1, size(yp_prime,2)-1), '%4d\n'];
+     %       fprintf(fileID,'NaN yp_prime = \n');
             %fprintf(fileID,fmt,isnan(yp_prime).');
-    end
+    %end
     
     yp_prime=yp_prime / (time + beta);
     
@@ -163,6 +163,15 @@ while time<T
     % if report time hit, normalize and output posterior variance
     if t_new > nxtposttime
         %normalization constant
+        
+        
+        % on trial 2: ERROR
+        %t_new = 27.62340 
+        %K = -739.23607 
+        %t_new = 27.62350 
+        %K = -Inf
+        %
+        %
         K = log(sum(exp(yp_new)+exp(ym_new)));
         %true posterior
         xp=yp_new-K;
@@ -171,7 +180,8 @@ while time<T
         %posterior variance over h
         v1=(gammaValues'+alpha)/(t_new+beta);
         v2=(gammaValues'+alpha+1)/(t_new+beta);
-        post_mean_h(idnxtposttime)=sum((exp(xp)+exp(xm)).*v1);
+        AVG=sum((exp(xp)+exp(xm)).*v1);
+        post_mean_h(idnxtposttime)=AVG;
         post_var_h(idnxtposttime)=sum((exp(xp)+exp(xm)).*v1.*v2)-...
             sum((exp(xp)+exp(xm)).*v1)^2;
         
@@ -180,25 +190,30 @@ while time<T
         ncp = sum(cptimes<t_new); % number of true change points by report time
         lbvar(idnxtposttime)=(alpha+ncp)/(beta+t_new)^2;
         
-        if and(t_new-inttime<dt, inttime == 26)
-            fmt = [repmat('%4d ', 1, size(yp_new,2)-1), '%4d\n'];
-            fprintf(fileID,'NaN yp_new = \n');
+        if abs(inttime-27) < 3
+            fprintf(fileID,'----------------------------\n');
+            fprintf(fileID,'report time report \n');
+            fprintf(fileID,'t_new = %.5f \n',t_new);
+            fprintf(fileID,'mean = %.5f \n',AVG);
+            fprintf(fileID,'----------------------------\n');
+            %fmt = [repmat('%4d ', 1, size(yp_new,2)-1), '%4d\n'];
+            %fprintf(fileID,'NaN yp_new = \n');
             %fprintf(fileID,fmt, isnan(yp_new).');
             
             %disp(isnan(yp_new'));
-            fprintf(fileID,'NaN ym_new \n');
+            %fprintf(fileID,'NaN ym_new \n');
             %disp(isnan(ym_new));
             
-            fprintf(fileID,'nxtposttime = %.3f \n', nxtposttime);
-            fprintf(fileID,'K = %.3f \n',K);
+            %fprintf(fileID,'nxtposttime = %.3f \n', nxtposttime);
+            %fprintf(fileID,'K = %.3f \n',K);
             
-            fprintf(fileID,'NaN v1 \n');
+            %fprintf(fileID,'NaN v1 \n');
             %disp(isnan(v1'));
-            fprintf(fileID,'NaN v2 \n');
+            %fprintf(fileID,'NaN v2 \n');
             %disp(isnan(v2));
-            fprintf(fileID,'NaN mean \n');
+            %fprintf(fileID,'NaN mean \n');
             %disp(isnan(post_mean_h(idnxtposttime)));
-            fprintf(fileID,'NaN varexp \n');
+            %fprintf(fileID,'NaN varexp \n');
             %disp(isnan((exp(xp)+exp(xm)).*v1.*v2)');
         end
         
@@ -210,16 +225,21 @@ while time<T
             idnxtposttime = idnxtposttime + 1;
             nxtposttime = posttimes(idnxtposttime);
         end
+        yp_old = xp;
+        ym_old = xm;
+    else
+        yp_old = yp_new;
+        ym_old = ym_new;
     end
     
     % reinitialize for next iteration
-    yp_old = yp_new;
-    if abs(t_new - 25.975) <= 0.001
-        fprintf(fileID,'t_new = %.4f \n',t_new);
-        fprintf(fileID,'length(yp_new) = %d \n',length(yp_old));
-        fprintf(fileID,'isnan(yp_new) = %d \n',sum(isnan(yp_old)));
+    
+    if (27 < t_new) && (t_new < 27.7)
+        fprintf(fileID,'t_new = %.5f \n',t_new);
+        fprintf(fileID,'K = %.5f \n',log(sum(exp(yp_new)+exp(ym_new))));
+        %fprintf(fileID,'isnan(ym_new) = %d \n',sum(ym_new==Inf));
     end
-    ym_old = ym_new;
+    
     time = t_new;
 end
 fclose(fileID);
