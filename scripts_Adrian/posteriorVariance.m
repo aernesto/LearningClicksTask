@@ -15,7 +15,7 @@ N=size(data,1);
 %T
 % total number of available trials for this trial duration
 nTrials = length(clicksCell);
-trial = 6; % select first trial for now
+trial = 98; % select first trial for now
 [lTrain,rTrain,cptimes]=clicksCell{trial, 1:3};
 
 
@@ -27,7 +27,7 @@ rateLow=2;
 % time step for forward Euler, in sec
 dt=1/10000;
 % max allowed change point count
-gamma_max=100;
+gamma_max=50;
 % hyperparameters for Gamma dist over hazard rate
 alpha=1;
 beta=1;
