@@ -1,7 +1,8 @@
 % This script does the following:
 %   1. load the stimulus for 1 trial of the dynamic clicks task
 %   2. evolve the full system with truncated gamma (CP count)
-%   3. compute posterior variance over hazard rate at several time points
+%   3. compute posterior variance and mean over hazard rate at several time 
+%      points
 
 %% load stimulus
 clear
@@ -14,7 +15,7 @@ N=size(data,1);
 %T
 % total number of available trials for this trial duration
 nTrials = length(clicksCell);
-trial = 98; % select first trial for now
+trial = 6; % select first trial for now
 [lTrain,rTrain,cptimes]=clicksCell{trial, 1:3};
 
 
