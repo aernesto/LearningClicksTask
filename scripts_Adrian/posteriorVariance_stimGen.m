@@ -11,10 +11,10 @@ clear
 %% set parameters
 % recall that h is normalized to 1 and T was set above (3 sec)
 % click rates in Hz
-rateHigh=60;
-rateLow=0.3;
+rateHigh=38;
+rateLow=0;
 % time step for forward Euler, in sec
-dt=1/100000;
+dt=1/10000;
 % max allowed change point count
 gamma_max=100;
 % hyperparameters for Gamma dist over hazard rate
@@ -23,7 +23,7 @@ beta=1;
 priorState=[.5,.5];
 
 %trial duration (sec)
-T=3;
+T=50;
 
 %% generate stimulus
 data=genStimBank2(1,1,rateHigh,rateLow,T);
@@ -40,7 +40,7 @@ trial = 1; % select first trial for now
 
 %% call ODE function
 %posttimes=1:50;
-posttimes=.05:.05:T;
+posttimes=1:T;
 %posttimes=[0.1:0.1:.9, posttimes];
 posttimes(end)=T-2*dt;
 % UP TO HEAR CODE IS FINE
