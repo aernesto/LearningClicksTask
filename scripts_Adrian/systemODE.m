@@ -123,8 +123,8 @@ while time<T
     % isnan(yp_new) = 1 
     %%%
     %%%%%%%%%%%%%%%%
-    yp_new_gamma0=yp_old(1)+((alpha-1)*exp(-yp_old(1))-alpha)*dt/(time+beta);
-    ym_new_gamma0=ym_old(1)+((alpha-1)*exp(-ym_old(1))-alpha)*dt/(time+beta);
+    yp_new_gamma0=yp_old(1)-alpha*dt/(time+beta);
+    ym_new_gamma0=ym_old(1)-alpha*dt/(time+beta);
     if and(t_new-inttime<dt, inttime == 26)
         fprintf(fileID,'yp_old(1) = %.3f \n', yp_old(1));
         fprintf(fileID,'isnan(yp_old(1)) = %d \n', isnan(yp_old(1)));
