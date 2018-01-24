@@ -1,17 +1,20 @@
 % This script does the following:
 %   1. generate the stimulus for 1 trial of the dynamic clicks task
 %   2. evolve the full system with truncated gamma (CP count)
-%   3. compute posterior variance over hazard rate at several time points
+%   3. compute posterior over change point count at several time points
+%   4. display a plot with two subplots described below
+%       - raster plot of stimulus clicks, with change points marked
+%       - posterior mean over CP count with 'error' bars shown at 1stdev
 %
 % REQUIRED SCRIPTS:
-% systemODE.m
+% returnPostA.m
 % genStimBank2.m
 
 clear
 %% set parameters
-% recall that h is normalized to 1 and T was set above (3 sec)
+% recall that h is normalized to 1 
 % click rates in Hz
-rateHigh=3;
+rateHigh=7;
 rateLow=0.0001;
 % time step for forward Euler, in sec
 dt=1/10000;
@@ -23,7 +26,7 @@ beta=1;
 priorState=[.5,.5];
 
 %trial duration (sec)
-T=1;
+T=3;
 
 %% generate stimulus
 data=genStimBank2(1,1,rateHigh,rateLow,T);
@@ -45,28 +48,18 @@ posttimes=0.1:0.1:T;
 posttimes(end)=T-2*dt;
 % UP TO HEAR CODE IS FINE
 tic
-[vars, means, lbvar]=systemODE(lTrain, rTrain, rateLow, rateHigh, T, ...
+postGamma=returnPostA(lTrain, rTrain, rateLow, rateHigh, T, ...
     gamma_max, posttimes, priorState, alpha, beta, dt, cptimes);
 toc
 % append prior values for time point t=0
-means=[alpha/beta,means];
-vars=[alpha/beta^2,vars];
-lbvar=[alpha/beta^2, lbvar];
+
 posttimes=[0,posttimes];
-%plot for posterior mean over h
+%plot stimulus with change point times
 subplot(2,1,1)
-plot(posttimes,means,'-b',[0,T],[1,1],'-r','LineWidth',3)
-ylabel('posterior mean','FontSize',14)
-xlim([0,T])
-ylim([0,max(means)+.5])
-title('posterior mean over h','FontSize',14)
-legend('learned','true')
-%plot for posterior variance over h
+plotClickTrains(lTrain,rTrain,cptimes, rateLow, rateHigh)
+title('stimulus with CP times','FontSize',14)
+%plot posterior mean over gamma
 subplot(2,1,2)
-plot(posttimes,vars,'-b',posttimes, lbvar,'-r','LineWidth',3);
-xlabel('time','FontSize',14)
-ylabel('posterior var','FontSize',14)
-legend('learned','theor. low bd')
-xlim([0,T])
-ylim([0,max(abs(vars))+.5]);
-title('posterior var over h','FontSize',14)
+
+
+title('posterior mean over gamma','FontSize',14)
