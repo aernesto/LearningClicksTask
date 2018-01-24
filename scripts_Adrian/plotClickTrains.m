@@ -32,4 +32,4 @@ ax=gca;
 ax.LineWidth=2;
 ax.YLim = [ymin,ymax];
 ax.FontSize=16;
-legend('right ear','left ear','change points', 'Location', 'westoutside')
+%legend('right ear','left ear','change points', 'Location', 'westoutside')

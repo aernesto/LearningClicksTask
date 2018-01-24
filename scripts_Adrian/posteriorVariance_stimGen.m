@@ -26,7 +26,7 @@ beta=1;
 priorState=[.5,.5];
 
 %trial duration (sec)
-T=3;
+T=30;
 
 %% generate stimulus
 data=genStimBank2(1,1,rateHigh,rateLow,T);
@@ -52,7 +52,11 @@ postGamma=returnPostA(lTrain, rTrain, rateLow, rateHigh, T, ...
     gamma_max, posttimes, priorState, alpha, beta, dt, cptimes);
 toc
 % append prior values for time point t=0
-
+means=(0:gamma_max-1)*postGamma; % row vector of posterior means over gamma
+interm=((0:gamma_max-1).^2)*postGamma;
+stdevs=sqrt(interm-(means.^2));
+means=[0,means];
+stdevs=[0,stdevs];
 posttimes=[0,posttimes];
 %plot stimulus with change point times
 subplot(2,1,1)
@@ -60,6 +64,5 @@ plotClickTrains(lTrain,rTrain,cptimes, rateLow, rateHigh)
 title('stimulus with CP times','FontSize',14)
 %plot posterior mean over gamma
 subplot(2,1,2)
-
-
+errorbar(posttimes,means,2*stdevs);
 title('posterior mean over gamma','FontSize',14)
