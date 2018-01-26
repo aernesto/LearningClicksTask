@@ -13,23 +13,24 @@
 clear
 %% set parameters
 % recall that h is normalized to 1 
+hh=4;
 % click rates in Hz
-rateHigh=10;
+rateHigh=2;
 rateLow=.01;
 % time step for forward Euler, in sec
 dt=1/10000;
 % max allowed change point count
-gamma_max=10;
+gamma_max=100;
 % hyperparameters for Gamma dist over hazard rate
 alpha=1;
 beta=1;
 priorState=[.5,.5];
 
 %trial duration (sec)
-T=3;
+T=1;
 
 %% generate stimulus
-data=genStimBank2(1,1,rateHigh,rateLow,T);
+data=genStimBank2(1,hh,rateHigh,rateLow,T);
 % number of distinct trial durations in the data array
 N=size(data,1);
 % get single trial from longest trial duration (3 sec)
