@@ -15,7 +15,7 @@ clear
 % recall that h is normalized to 1 
 hh=4;
 % click rates in Hz
-rateHigh=2;
+rateHigh=38;
 rateLow=.01;
 % time step for forward Euler, in sec
 dt=1/10000;
@@ -27,10 +27,11 @@ beta=1;
 priorState=[.5,.5];
 
 %trial duration (sec)
-T=1;
+T=0.5;
 
 %% generate stimulus
-data=genStimBank2(1,hh,rateHigh,rateLow,T);
+%data=genStimBank2(1,hh,rateHigh,rateLow,T);
+load('../data/ClickTrains_h4_rateHigh38_rateLow001_nTrials1_SHORT.mat')
 % number of distinct trial durations in the data array
 N=size(data,1);
 % get single trial from longest trial duration (3 sec)
@@ -81,7 +82,7 @@ bar(postGamma(:,1))
 ylabel('probability')
 title(['posterior at t=',num2str(posttimes(2),2)])
 subplot(5,1,5)
-bar(postGamma(:,10))
+bar(postGamma(:,end))
 xlabel('CP count')
 ylabel('probability')
-title(['posterior at t=',num2str(posttimes(11),2)])
+title(['posterior at t=',num2str(posttimes(end),2)])
