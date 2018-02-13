@@ -53,14 +53,37 @@ posttimes=0.001:0.001:T;
 posttimes(end)=T-2*dt;
 
 fig=figure(1); 
-hax=axes;
-hold on 
 SP=rTrain(1)*1000; %right click time in msec
+ax1=subplot(1,2,1);
+hold on
+title('post H+')
+ylabel('prob(H+)')
+xlabel('msec')
+xlim([0,11])
+ylim([0,1.05])
+line([SP SP],get(ax1,'YLim'),'Color',[1 0 0], 'LineWidth',2)
+line(get(ax1,'XLim'),[0.5,.5],'Color',[0 0 0], 'LineWidth',1)
+line(get(ax1,'XLim'),[1,1],'Color',[0 0 0], 'LineWidth',1)
+ax1.FontSize=20;
+
+ax2=subplot(1,2,2);
+hold on 
+title('post H-')
+ylabel('prob(H-)')
+xlabel('msec')
+xlim([0,11])
+ylim([0,1.05])
+line([SP SP],get(ax2,'YLim'),'Color',[1 0 0], 'LineWidth',2)
+line(get(ax2,'XLim'),[0.5,.5],'Color',[0 0 0], 'LineWidth',1)
+line(get(ax2,'XLim'),[1,1],'Color',[0 0 0], 'LineWidth',1)
+ax2.FontSize=20;
+
 for snr=[.5,1,2,4]
     rateHigh=getlambdahigh(rateLow, snr, true);
     postH=returnPostH(lTrain, rTrain, rateLow, rateHigh, T, ...
     gamma_max, posttimes, priorState, alpha, beta, dt, cptimes);
-    plot(1000*posttimes, postH(1,:), '-*','LineWidth',3)
+    plot(ax1,1000*posttimes, postH(1,:), '-*','LineWidth',3)
+    plot(ax2,1000*posttimes, postH(2,:), '-*','LineWidth',3)
 %     ax1=subplot(2,2,1);
 %     ax1.FontSize=20;
 %     theoPost=1./(posttimes+1);
@@ -99,17 +122,11 @@ for snr=[.5,1,2,4]
 %     title('H-, a=1')
 
 end
-title('posterior prob of H+ as fcn of time')
-ylabel('posterior prob(H+)')
-xlabel('time within stimulus (msec)')
-xlim([0,11])
-ylim([0,1.05])
-line([SP SP],get(hax,'YLim'),'Color',[1 0 0], 'LineWidth',2)
-line(get(hax,'XLim'),[0.5,.5],'Color',[0 0 0], 'LineWidth',1)
-line(get(hax,'XLim'),[1,1],'Color',[0 0 0], 'LineWidth',1)
-legend('snr=0.5','snr=1','snr=2','snr=4',...
-    'click time', 'Location', 'east')
-hax.FontSize=20;
+
+
+legend(ax1,'click time','','','snr=0.5','snr=1','snr=2','snr=4', 'Location', 'east')
+legend(ax2,'click time','','','snr=0.5','snr=1','snr=2','snr=4', 'Location', 'east')
+
 
 
 % append prior values for time point t=0
