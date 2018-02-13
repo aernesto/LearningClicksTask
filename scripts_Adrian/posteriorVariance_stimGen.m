@@ -51,65 +51,65 @@ cptimes=0.004;
 posttimes=0.001:0.001:T;
 %posttimes=[0.1:0.1:.9, posttimes];
 posttimes(end)=T-2*dt;
-% UP TO HEAR CODE IS FINE
-tic
-jointPost=returnPostH(lTrain, rTrain, rateLow, rateHigh, T, ...
-    gamma_max, posttimes, priorState, alpha, beta, dt, cptimes);
-toc
 
 fig=figure(1); 
-%hold on 
+hax=axes;
+hold on 
 SP=rTrain(1)*1000; %right click time in msec
-%for snr=[.5,1,2,4]
-%    rate_high=getlambdahigh(rate_low, snr, true);
-%    P=jointPosteriorClicks(lTrain,rTrain);
-    ax1=subplot(2,2,1);
-    ax1.FontSize=20;
-    theoPost=1./(posttimes+1);
-    CCC1=jointPost(1,1)/theoPost(1);
-    CCC2=jointPost(1,5)/theoPost(5);
-    CCC3=jointPost(gamma_max+1,5)/theoPost(5);
-    theoPost1=[CCC1*theoPost(1:4),CCC2*theoPost(5:end)];
-    theoPost2=[CCC1*theoPost(1:4),CCC3*theoPost(5:end)];
-    hold on
-    plot(1000*(posttimes), jointPost(1,:),'bo',...
-        1000*posttimes, theoPost1, 'r*','MarkerSize',10)
-    line([SP SP],get(ax1,'YLim'),'Color',[1 0 0], 'LineWidth',2)
-    line(get(ax1,'XLim'),[0.5,.5],'Color',[0 0 0], 'LineWidth',1)
-    line(get(ax1,'XLim'),[1,1],'Color',[0 0 0], 'LineWidth',1)
-    legend('sim','theo')
-    title('H+, a=0')
-    ax2=subplot(2,2,2);
-    ax2.FontSize=20;
-    hold on
-    plot(1000*(posttimes), jointPost(gamma_max+1,:),'bo',...
-        1000*posttimes, theoPost2, 'r*','MarkerSize',10)
-    %legend('sim','theo','Location','northeast')
-    line([SP SP],[0,1],'Color',[1 0 0], 'LineWidth',2)
-    line(get(ax2,'XLim'),[0.5,.5],'Color',[0 0 0], 'LineWidth',1)
-    line(get(ax2,'XLim'),[1,1],'Color',[0 0 0], 'LineWidth',1)
-    title('H-, a=0')
-    ax3=subplot(2,2,3);
-    ax3.FontSize=20;
-    plot(1000*(posttimes), jointPost(2,:),'-o','LineWidth', ...
-        3, 'MarkerSize',8)
-    title('H+, a=1')
-    ax4=subplot(2,2,4);
-    ax4.FontSize=20;
-    plot(1000*(posttimes), jointPost(gamma_max+2,:),'-o','LineWidth', ...
-        3, 'MarkerSize',8)
-    title('H-, a=1')
-%end
-% title('posterior prob of H+ as fcn of time')
-% ylabel('posterior prob(H+)')
-% xlabel('time within stimulus (msec)')
-% xlim([0,11])
-% ylim([0.45,1.05])
-% line([SP SP],get(hax,'YLim'),'Color',[1 0 0], 'LineWidth',2)
-% line(get(hax,'XLim'),[0.5,.5],'Color',[0 0 0], 'LineWidth',1)
-% line(get(hax,'XLim'),[1,1],'Color',[0 0 0], 'LineWidth',1)
-% legend('snr=1','click time', 'Location', 'east')
-% hax.FontSize=20;
+for snr=[.5,1,2,4]
+    rateHigh=getlambdahigh(rateLow, snr, true);
+    postH=returnPostH(lTrain, rTrain, rateLow, rateHigh, T, ...
+    gamma_max, posttimes, priorState, alpha, beta, dt, cptimes);
+    plot(1000*posttimes, postH(1,:), '-*','LineWidth',3)
+%     ax1=subplot(2,2,1);
+%     ax1.FontSize=20;
+%     theoPost=1./(posttimes+1);
+%     CCC1=jointPost(1,1)/theoPost(1);
+%     CCC2=jointPost(1,5)/theoPost(5);
+%     CCC3=jointPost(gamma_max+1,5)/theoPost(5);
+%     theoPost1=[CCC1*theoPost(1:4),CCC2*theoPost(5:end)];
+%     theoPost2=[CCC1*theoPost(1:4),CCC3*theoPost(5:end)];
+%     hold on
+%     plot(1000*(posttimes), jointPost(1,:),'bo',...
+%         1000*posttimes, theoPost1, 'r*','MarkerSize',10)
+%     line([SP SP],get(ax1,'YLim'),'Color',[1 0 0], 'LineWidth',2)
+%     line(get(ax1,'XLim'),[0.5,.5],'Color',[0 0 0], 'LineWidth',1)
+%     line(get(ax1,'XLim'),[1,1],'Color',[0 0 0], 'LineWidth',1)
+%     legend('sim','theo')
+%     title('H+, a=0')
+%     ax2=subplot(2,2,2);
+%     ax2.FontSize=20;
+%     hold on
+%     plot(1000*(posttimes), jointPost(gamma_max+1,:),'bo',...
+%         1000*posttimes, theoPost2, 'r*','MarkerSize',10)
+%     %legend('sim','theo','Location','northeast')
+%     line([SP SP],[0,1],'Color',[1 0 0], 'LineWidth',2)
+%     line(get(ax2,'XLim'),[0.5,.5],'Color',[0 0 0], 'LineWidth',1)
+%     line(get(ax2,'XLim'),[1,1],'Color',[0 0 0], 'LineWidth',1)
+%     title('H-, a=0')
+%     ax3=subplot(2,2,3);
+%     ax3.FontSize=20;
+%     plot(1000*(posttimes), jointPost(2,:),'-o','LineWidth', ...
+%         3, 'MarkerSize',8)
+%     title('H+, a=1')
+%     ax4=subplot(2,2,4);
+%     ax4.FontSize=20;
+%     plot(1000*(posttimes), jointPost(gamma_max+2,:),'-o','LineWidth', ...
+%         3, 'MarkerSize',8)
+%     title('H-, a=1')
+
+end
+title('posterior prob of H+ as fcn of time')
+ylabel('posterior prob(H+)')
+xlabel('time within stimulus (msec)')
+xlim([0,11])
+ylim([0,1.05])
+line([SP SP],get(hax,'YLim'),'Color',[1 0 0], 'LineWidth',2)
+line(get(hax,'XLim'),[0.5,.5],'Color',[0 0 0], 'LineWidth',1)
+line(get(hax,'XLim'),[1,1],'Color',[0 0 0], 'LineWidth',1)
+legend('snr=0.5','snr=1','snr=2','snr=4',...
+    'click time', 'Location', 'east')
+hax.FontSize=20;
 
 
 % append prior values for time point t=0
