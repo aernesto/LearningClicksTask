@@ -58,32 +58,46 @@ jointPost=returnPostH(lTrain, rTrain, rateLow, rateHigh, T, ...
 toc
 
 fig=figure(1); 
-hax=axes; 
-hax.FontSize=20;
 %hold on 
-%SP=rTrain(1)*1000; %right click time in msec
+SP=rTrain(1)*1000; %right click time in msec
 %for snr=[.5,1,2,4]
 %    rate_high=getlambdahigh(rate_low, snr, true);
 %    P=jointPosteriorClicks(lTrain,rTrain);
-    subplot(2,2,1)
-    theoPost=0.5./(2*(posttimes+1));
-    CCC=jointPost(1,1)/theoPost(1);
+    ax1=subplot(2,2,1);
+    ax1.FontSize=20;
+    theoPost=1./(posttimes+1);
+    CCC1=jointPost(1,1)/theoPost(1);
+    CCC2=jointPost(1,5)/theoPost(5);
+    CCC3=jointPost(gamma_max+1,5)/theoPost(5);
+    theoPost1=[CCC1*theoPost(1:4),CCC2*theoPost(5:end)];
+    theoPost2=[CCC1*theoPost(1:4),CCC3*theoPost(5:end)];
+    hold on
     plot(1000*(posttimes), jointPost(1,:),'bo',...
-        1000*posttimes, CCC*theoPost, 'r*')
+        1000*posttimes, theoPost1, 'r*','MarkerSize',10)
+    line([SP SP],get(ax1,'YLim'),'Color',[1 0 0], 'LineWidth',2)
+    line(get(ax1,'XLim'),[0.5,.5],'Color',[0 0 0], 'LineWidth',1)
+    line(get(ax1,'XLim'),[1,1],'Color',[0 0 0], 'LineWidth',1)
     legend('sim','theo')
     title('H+, a=0')
-    subplot(2,2,2)
+    ax2=subplot(2,2,2);
+    ax2.FontSize=20;
+    hold on
     plot(1000*(posttimes), jointPost(gamma_max+1,:),'bo',...
-        1000*posttimes, CCC*theoPost, 'r*')
-    legend('sim','theo')
+        1000*posttimes, theoPost2, 'r*','MarkerSize',10)
+    %legend('sim','theo','Location','northeast')
+    line([SP SP],[0,1],'Color',[1 0 0], 'LineWidth',2)
+    line(get(ax2,'XLim'),[0.5,.5],'Color',[0 0 0], 'LineWidth',1)
+    line(get(ax2,'XLim'),[1,1],'Color',[0 0 0], 'LineWidth',1)
     title('H-, a=0')
-    subplot(2,2,3)
+    ax3=subplot(2,2,3);
+    ax3.FontSize=20;
     plot(1000*(posttimes), jointPost(2,:),'-o','LineWidth', ...
-        3, 'MarkerSize',4)
+        3, 'MarkerSize',8)
     title('H+, a=1')
-    subplot(2,2,4)
+    ax4=subplot(2,2,4);
+    ax4.FontSize=20;
     plot(1000*(posttimes), jointPost(gamma_max+2,:),'-o','LineWidth', ...
-        3, 'MarkerSize',4)
+        3, 'MarkerSize',8)
     title('H-, a=1')
 %end
 % title('posterior prob of H+ as fcn of time')

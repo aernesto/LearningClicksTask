@@ -78,12 +78,13 @@ end
 presclick=false; % if true, means at least one click fell in current time bin
 %fileID=fopen('sysODElog.txt','w');
 while time<T
-    jump=0;
+    jump_right=0;
+    jump_left=0;
     t_new=time + dt;
     inttime=floor(t_new);
     if t_new > lnxt
         presclick=true;
-        jump = -kappa;
+        jump_left = kappa;
         ltidx = ltidx + 1;
         if ltidx > lmax
             lnxt = inf;
@@ -93,7 +94,7 @@ while time<T
     end
     if t_new > rnxt
         presclick=true;
-        jump = jump+kappa;
+        jump_right = kappa;
         rtidx = rtidx + 1;
         if rtidx > rmax
             rnxt = inf;
@@ -128,8 +129,8 @@ while time<T
     ym_new = [ym_new_gamma0;dt*ym_prime + ym_old(2:end)];
     
     % add jump 
-    yp_new = yp_new + jump;
-    ym_new = ym_new + jump;
+    yp_new = yp_new + jump_right;
+    ym_new = ym_new + jump_left;
     
     % if report time hit, normalize and output posterior variance
     if t_new > nxtposttime
