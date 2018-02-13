@@ -23,10 +23,10 @@ posttimes, priorState, alpha, beta, dt, cptimes)
 %
 % RETURNS:
 %   ss - stochastic matrix (cols sum to 1) of dimensions 
-%        2-by-posttimes containing the 
-%        values of the posterior over state
+%        2*gammax-by-posttimes containing the 
+%        values of the joint posterior over state and CP count
 
-ss=zeros(2,length(posttimes));
+ss=zeros(2*gammax,length(posttimes));
 coliter=1;
 % maximum value of the indices for each train vector
 lmax=length(lTrain);
@@ -138,11 +138,10 @@ while time<T
         %true posterior
         xp=yp_new-K;
         xm=ym_new-K;
-        marginalOverState=[sum(exp(xp));sum(exp(xm))];
-        disp(sum(marginalOverState))
+        vector=[exp(xp);exp(xm)];
         %disp(t_new)
         %disp(sum(marginalOverGamma))
-        ss(:,coliter)=marginalOverState;
+        ss(:,coliter)=vector;
         coliter=coliter+1;
                
         %update index of next reporting time

@@ -53,33 +53,49 @@ posttimes=0.001:0.001:T;
 posttimes(end)=T-2*dt;
 % UP TO HEAR CODE IS FINE
 tic
-postH=returnPostH(lTrain, rTrain, rateLow, rateHigh, T, ...
+jointPost=returnPostH(lTrain, rTrain, rateLow, rateHigh, T, ...
     gamma_max, posttimes, priorState, alpha, beta, dt, cptimes);
 toc
 
-
-
 fig=figure(1); 
 hax=axes; 
-hold on 
-SP=rTrain(1)*1000; %right click time in msec
+hax.FontSize=20;
+%hold on 
+%SP=rTrain(1)*1000; %right click time in msec
 %for snr=[.5,1,2,4]
 %    rate_high=getlambdahigh(rate_low, snr, true);
 %    P=jointPosteriorClicks(lTrain,rTrain);
-
-    plot(1000*(posttimes), postH(1,:),'-o','LineWidth', ...
+    subplot(2,2,1)
+    theoPost=0.5./(2*(posttimes+1));
+    CCC=jointPost(1,1)/theoPost(1);
+    plot(1000*(posttimes), jointPost(1,:),'bo',...
+        1000*posttimes, CCC*theoPost, 'r*')
+    legend('sim','theo')
+    title('H+, a=0')
+    subplot(2,2,2)
+    plot(1000*(posttimes), jointPost(gamma_max+1,:),'bo',...
+        1000*posttimes, CCC*theoPost, 'r*')
+    legend('sim','theo')
+    title('H-, a=0')
+    subplot(2,2,3)
+    plot(1000*(posttimes), jointPost(2,:),'-o','LineWidth', ...
         3, 'MarkerSize',4)
+    title('H+, a=1')
+    subplot(2,2,4)
+    plot(1000*(posttimes), jointPost(gamma_max+2,:),'-o','LineWidth', ...
+        3, 'MarkerSize',4)
+    title('H-, a=1')
 %end
-title('posterior prob of H+ as fcn of time')
-ylabel('posterior prob(H+)')
-xlabel('time within stimulus (msec)')
-xlim([0,11])
-ylim([0.45,1.05])
-line([SP SP],get(hax,'YLim'),'Color',[1 0 0], 'LineWidth',2)
-line(get(hax,'XLim'),[0.5,.5],'Color',[0 0 0], 'LineWidth',1)
-line(get(hax,'XLim'),[1,1],'Color',[0 0 0], 'LineWidth',1)
-legend('snr=1','click time', 'Location', 'east')
-hax.FontSize=20;
+% title('posterior prob of H+ as fcn of time')
+% ylabel('posterior prob(H+)')
+% xlabel('time within stimulus (msec)')
+% xlim([0,11])
+% ylim([0.45,1.05])
+% line([SP SP],get(hax,'YLim'),'Color',[1 0 0], 'LineWidth',2)
+% line(get(hax,'XLim'),[0.5,.5],'Color',[0 0 0], 'LineWidth',1)
+% line(get(hax,'XLim'),[1,1],'Color',[0 0 0], 'LineWidth',1)
+% legend('snr=1','click time', 'Location', 'east')
+% hax.FontSize=20;
 
 
 % append prior values for time point t=0
