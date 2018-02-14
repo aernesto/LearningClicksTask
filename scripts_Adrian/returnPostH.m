@@ -25,6 +25,9 @@ posttimes, priorState, alpha, beta, dt, cptimes)
 %   ss - stochastic matrix (cols sum to 1) of dimensions 
 %        2-by-posttimes containing the 
 %        values of the posterior over state 
+%
+% REQUIRED SCRIPTS:
+%   None
 
 ss=zeros(2,length(posttimes));
 coliter=1;

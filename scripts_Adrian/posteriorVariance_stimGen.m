@@ -7,8 +7,8 @@
 %       - posterior mean over CP count with 'error' bars shown at 1stdev
 %
 % REQUIRED SCRIPTS:
-% returnPostA.m
-% genStimBank2.m
+% returnPostH.m
+% getlambdahigh.m
 
 clear
 %% set parameters
